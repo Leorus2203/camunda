@@ -1,0 +1,33 @@
+{
+  "components": [
+    {
+      "label": "Neue Iban",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_072e3fi",
+        "columns": null
+      },
+      "id": "Field_1rqtsn3",
+      "key": "newiban"
+    },
+    {
+      "label": "Genehmigen",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_17tqa2z",
+        "columns": null
+      },
+      "id": "Field_0mzqikh",
+      "key": "approved"
+    }
+  ],
+  "type": "default",
+  "id": "iban-form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.20.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.20.0",
+  "schemaVersion": 15
+}

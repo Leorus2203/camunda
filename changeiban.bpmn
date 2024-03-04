@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1d19z0l" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.20.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:process id="change-iban" name="Bankverbindung ändern" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1" name="Bankverbindung ändern">
+      <bpmn:outgoing>Flow_044n94n</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_044n94n" sourceRef="StartEvent_1" targetRef="Gateway_0fjzuq3" />
+    <bpmn:serviceTask id="Activity_0ns26sj" name="Ändere gespeicherte IBAN" camunda:type="external" camunda:topic="change-iban">
+      <bpmn:incoming>Flow_09llvp9</bpmn:incoming>
+      <bpmn:incoming>Flow_14aloct</bpmn:incoming>
+      <bpmn:outgoing>Flow_0puacd3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0tr8gkk" name="Änderung abgeschlossen">
+      <bpmn:incoming>Flow_0puacd3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0puacd3" sourceRef="Activity_0ns26sj" targetRef="Event_0tr8gkk" />
+    <bpmn:sequenceFlow id="Flow_09llvp9" name="Beginnt mit DE" sourceRef="Gateway_0fjzuq3" targetRef="Activity_0ns26sj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${newiban.startsWith("DE")}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0wxmyol" sourceRef="Activity_16akvq8" targetRef="Gateway_17tgh76" />
+    <bpmn:sequenceFlow id="Flow_1at0xy6" name="Beginnt nicht mit DE" sourceRef="Gateway_0fjzuq3" targetRef="Activity_16akvq8">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!newiban.startsWith("DE")}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Activity_16akvq8" name="Manuelle Prüfung" camunda:formRef="iban-form" camunda:formRefBinding="deployment" camunda:assignee="demo">
+      <bpmn:incoming>Flow_1at0xy6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0wxmyol</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0fjzuq3" name="Beginnt mit DE?">
+      <bpmn:incoming>Flow_044n94n</bpmn:incoming>
+      <bpmn:outgoing>Flow_09llvp9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1at0xy6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:exclusiveGateway id="Gateway_17tgh76">
+      <bpmn:incoming>Flow_0wxmyol</bpmn:incoming>
+      <bpmn:outgoing>Flow_14aloct</bpmn:outgoing>
+      <bpmn:outgoing>Flow_05kmbnf</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_14aloct" name="Genehmigt" sourceRef="Gateway_17tgh76" targetRef="Activity_0ns26sj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_05kmbnf" name="Abgelehnt" sourceRef="Gateway_17tgh76" targetRef="Event_11vlxws">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!approved}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_11vlxws" name="Keine Änderung vorgenommen">
+      <bpmn:incoming>Flow_05kmbnf</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="change-iban">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="142" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="120" y="142" width="80" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18p6oe2_di" bpmnElement="Activity_16akvq8">
+        <dc:Bounds x="370" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0u1c4ai_di" bpmnElement="Gateway_0fjzuq3" isMarkerVisible="true">
+        <dc:Bounds x="225" y="92" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="210" y="62" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_17tgh76_di" bpmnElement="Gateway_17tgh76" isMarkerVisible="true">
+        <dc:Bounds x="525" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tr8gkk_di" bpmnElement="Event_0tr8gkk">
+        <dc:Bounds x="722" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="703" y="61.5" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nhfnvv_di" bpmnElement="Activity_0ns26sj">
+        <dc:Bounds x="500" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11vlxws_di" bpmnElement="Event_11vlxws">
+        <dc:Bounds x="722" y="232" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="701" y="275" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_044n94n_di" bpmnElement="Flow_044n94n">
+        <di:waypoint x="178" y="117" />
+        <di:waypoint x="225" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0puacd3_di" bpmnElement="Flow_0puacd3">
+        <di:waypoint x="600" y="117" />
+        <di:waypoint x="722" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09llvp9_di" bpmnElement="Flow_09llvp9">
+        <di:waypoint x="275" y="117" />
+        <di:waypoint x="500" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="344" y="99" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0wxmyol_di" bpmnElement="Flow_0wxmyol">
+        <di:waypoint x="470" y="250" />
+        <di:waypoint x="525" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1at0xy6_di" bpmnElement="Flow_1at0xy6">
+        <di:waypoint x="250" y="142" />
+        <di:waypoint x="250" y="250" />
+        <di:waypoint x="370" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="258" y="216" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14aloct_di" bpmnElement="Flow_14aloct">
+        <di:waypoint x="550" y="225" />
+        <di:waypoint x="550" y="157" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="552" y="188" width="55" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05kmbnf_di" bpmnElement="Flow_05kmbnf">
+        <di:waypoint x="575" y="250" />
+        <di:waypoint x="722" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="624" y="232" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
